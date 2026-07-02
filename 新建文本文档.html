@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>座位查询系统</title>
+    <style>
+        * {margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+        body {background:#f5f7fa;padding:20px}
+        .box {max-width:900px;margin:0 auto}
+        .search-box {background:#fff;padding:24px;border-radius:12px;box-shadow:0 2px 10px #0001;margin-bottom:20px}
+        input {width:100%;padding:12px 14px;margin:8px 0;border:1px solid #ddd;border-radius:8px;font-size:16px}
+        button {width:100%;padding:13px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:16px;margin-top:10px}
+        .tip {margin:10px 0;color:#666}
+        .seat-wrap {background:#fff;padding:20px;border-radius:12px;display:none}
+        .seat-row {display:flex;gap:6px;margin:6px 0;justify-content:center}
+        .seat {width:36px;height:36px;border:1px solid #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;background:#eee}
+        .seat.my {background:#ef4444;color:#fff;border-color:#ef4444}
+        .info {font-size:18px;margin-bottom:16px;color:#111}
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="search-box">
+        <h3>场次座位查询</h3>
+        <p class="tip">请填写报名时的姓名和手机号查询座位</p>
+        <input id="name" placeholder="输入姓名">
+        <input id="phone" placeholder="输入手机号码">
+        <button onclick="searchSeat()">查询座位</button>
+    </div>
+
+    <div class="seat-wrap" id="seatBox">
+        <div class="info" id="userInfo"></div>
+        <div id="seatContainer"></div>
+    </div>
+</div>
+
+<script>
+// ========== 1、在这里录入所有人员数据（自行修改）==========
+const seatData = [
+    {name:"张三",phone:"13800000001",seat:"1-1"},
+    {name:"李四",phone:"13800000002",seat:"1-2"},
+    {name:"王五",phone:"13800000003",seat:"2-1"},
+    {name:"赵六",phone:"13800000004",seat:"2-2"},
+];
+// 座位布局配置：几排、每排多少座
+const rowNum = 4;
+const colNum = 6;
+
+// 查询匹配
+function searchSeat(){
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const user = seatData.find(item=>item.name===name && item.phone===phone);
+    if(!user){
+        alert("姓名或手机号错误，请核对！");
+        return;
+    }
+    // 显示个人座位信息
+    document.getElementById('userInfo').innerText = `您好${name}，您的座位号：${user.seat}`;
+    document.getElementById('seatBox').style.display = 'block';
+    renderSeat(user.seat);
+}
+
+// 渲染全场座位，本人标红
+function renderSeat(mySeatId){
+    const container = document.getElementById('seatContainer');
+    container.innerHTML = "";
+    for(let r=1;r<=rowNum;r++){
+        let rowDom = document.createElement('div');
+        rowDom.className = "seat-row";
+        for(let c=1;c<=colNum;c++){
+            let seatId = `${r}-${c}`;
+            let seatDom = document.createElement('div');
+            seatDom.className = "seat";
+            seatDom.innerText = seatId;
+            if(seatId === mySeatId) seatDom.classList.add("my");
+            rowDom.appendChild(seatDom);
+        }
+        container.appendChild(rowDom);
+    }
+}
+</script>
+</body>
+</html>
